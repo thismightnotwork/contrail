@@ -3,8 +3,8 @@ WORKDIR /web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
 COPY web/ ./
-COPY integrate-acars.mjs /web/integrate-acars.mjs
-RUN node integrate-acars.mjs && npm run build
+COPY integrate-acars.mjs brand-ui.mjs /web/
+RUN node integrate-acars.mjs && node brand-ui.mjs && npm run build
 
 FROM python:3.12-slim
 WORKDIR /app
