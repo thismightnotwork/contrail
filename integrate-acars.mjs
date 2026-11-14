@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+const path = 'src/panel/AircraftPanel.svelte';
+let source = fs.readFileSync(path, 'utf8');
+const importAnchor = '  import Photo from "./Photo.svelte";';
+const panelAnchor = '  <footer>';
+if (!source.includes(importAnchor) || !source.includes(panelAnchor)) throw Error('Upstream aircraft panel changed; review the ACARS integration.');
+source = source.replace(importAnchor, '  import AcarsPanel from "./AcarsPanel.svelte";\n' + importAnchor);
+source = source.replace(panelAnchor, '  <section style="order:7" aria-label="Recorded ACARS"><AcarsPanel {hex} registration={data?.registration ?? ""} /></section>\n\n' + panelAnchor);
+fs.writeFileSync(path, source);
+let index = fs.readFileSync('index.html', 'utf8');
+if (!index.includes('</body>')) throw Error('Missing index body');
+index = index.replace('</body>', '<a href="/acars" style="position:fixed;left:12px;bottom:42px;z-index:6;background:#142136;color:#fff;padding:10px 14px;border-radius:8px;font:600 13px system-ui;text-decoration:none">ACARS Top 500</a>\n</body>');
+fs.writeFileSync('index.html', index);
